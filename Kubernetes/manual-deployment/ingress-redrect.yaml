@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: eks-react-app
+  namespace: api-production
+  labels:
+    app: eks-todo-apps
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-route53
+spec:  
+  ingressClassName: alb
+  rules:
+    - host: be-phong-api.devops-training.opswat.com
+      http:
+        paths:
+          - path: /*
+            backend:
+              service:
+                name: ssl-redirect
+                port: use-annotation
+          - path: /*
+            backend:
+              service:
+                name: eks-react-phong-trainee-service
+                port:
+                  number: 5000

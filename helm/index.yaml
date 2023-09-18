@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  to-do-app:
+  - apiVersion: v2
+    appVersion: latest
+    created: "2023-09-13T11:26:00.398893124+07:00"
+    description: A Helm chart for Kubernetes
+    digest: bb5fd840345d92561f80bbc08e34ba304ef85b71da7f88f538f3b8d39087bc69
+    name: to-do-app
+    type: application
+    urls:
+    - releases/to-do-app-0.1.0.tgz
+    version: 0.1.0
+generated: "2023-09-13T11:26:00.39763172+07:00"

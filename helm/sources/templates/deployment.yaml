@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deployment
+  namespace: {{ .Values.namespace }}
+  labels: {{ include "common.labels" . | nindent 6 }}
+spec:
+  selector:
+    matchLabels: {{ include "common.labels" . | nindent 8 }}
+    minReadySeconds: 5
+    strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 1
+  template:
+    metadata:
+      labels: {{ include "common.labels" . | nindent 10 }}
+    spec:
+        serviceAccountName: {{ .Values.ECRaccess }}
+        containers:
+        - name: {{ .Release.Name }}
+          image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          ports:
+          - containerPort: {{ .Values.port }}
+          readinessProbe:
+            httpGet:
+              path: /todos
+              port: 5000
+              initialDelaySeconds: 300
+              periodSeconds: 30
+              successThreshold: 1
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.dbhub.enabled }}
+          env:
+          - name: SECRET_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.internalSecretName }}
+                key: {{ .Values.dbhub.dbusername }}
+                optional: {{ default true .Values.dbhub.optional }}
+          - name: SECRET_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.internalSecretName }}
+                key: {{ .Values.dbhub.dbpass }}
+                optional: {{ default true .Values.dbhub.optional }}
+          - name: SECRET_PORT
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.internalSecretName }}
+                key: {{ .Values.dbhub.dbport }}
+                optional: {{ default true .Values.dbhub.optional }}
+          - name: SECRET_NAME
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.internalSecretName }}
+                key: {{ .Values.dbhub.dbname }}
+                optional: {{ default true .Values.dbhub.optional }}
+          - name: SECRET_HOST
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.internalSecretName }}
+                key: {{ .Values.dbhub.dbhost }}
+                optional: {{ default true .Values.dbhub.optional }}
+          {{ end }} 

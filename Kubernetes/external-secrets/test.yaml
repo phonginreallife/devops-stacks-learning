@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busybox
+  namespace: external-secrets
+spec:
+  containers:
+    - image: busybox 
+      command:
+        - sleep
+        - "3600"
+      imagePullPolicy: IfNotPresent
+      name: busybox
+      env:
+        - name: SECRET_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: secdbsasecret
+              key: secdbsa-db-username
+              optional: false 
+        - name: SECRET_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: secdbsasecret
+              key: secdbsa-db-password
+              optional: false
+  restartPolicy: Always

@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-ingress
+  namespace: {{ .Values.namespace }}
+  labels: {{ include "common.labels" . | nindent 6 }}
+  annotations: {{ toYaml .Values.annotations | nindent 6 }}
+spec:  
+  ingressClassName: alb
+  rules:
+    - host: {{ .Values.domain }}
+      http: 
+        paths:
+          - path: /
+            pathType: Prefix  # Add this line
+            backend:
+              service:
+                name: {{ .Release.Name }}-service
+                port:
+                  number: {{ .Values.port }}

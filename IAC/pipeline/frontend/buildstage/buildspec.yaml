@@ -1,0 +1,15 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - echo "installing package..."
+      - npm install
+  build:
+    commands:
+      - echo "building package..."
+      - npm run build
+  post_build:
+    commands:
+      - echo "pushing static contents to AWS S3..."
+      - aws s3 sync --delete build/. s3://tf-phong-fe20230812132829577700000001
+

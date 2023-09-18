@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cwagentconfig
+  namespace: amazon-cloudwatch
+data:
+  cwagentconfig.json: |
+    {
+      "agent": {
+        "region": "us-west-2"
+      },
+      "logs": {
+        "metrics_collected": {
+          "kubernetes": {
+            "cluster_name": "wind-eks-cluster",
+            "metrics_collection_interval": 20
+          }
+        },
+        "force_flush_interval": 5,
+        "endpoint_override": "logs.us-west-2.amazonaws.com"
+      }
+    },
+       "metrics": {
+        "metrics_collected": {
+            "statsd": {
+                "service_address": ":8125"
+            }
+        }
+    }
+

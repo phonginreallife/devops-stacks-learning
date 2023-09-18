@@ -1,0 +1,46 @@
+# Application values
+namespace: api-production
+image: 
+  name: 492804330065.dkr.ecr.us-west-2.amazonaws.com/todoreactapp
+  tag: latest
+  pullPolicy: IfNotPresent
+port: 5000
+ECRaccess: ecr-readonly-access-sa 
+
+
+# Secrect values
+externalSecretName: secretdbsa
+internalSecretName: secretsdb 
+secretStoreName: serectcdbsa
+secretKeyName: db-secret-phong
+targetName: secretsdb
+awsRegion: us-west-2
+
+# Annotations
+annotations:
+  alb.ingress.kubernetes.io/scheme: internet-facing
+  alb.ingress.kubernetes.io/target-type: ip
+  alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+  alb.ingress.kubernetes.io/ssl-redirect: '443'
+  alb.ingress.kubernetes.io/certificate-arn: 'arn:aws:acm:us-west-2:492804330065:certificate/64a16580-8524-411b-97b6-d51088d15d75'
+  alb.ingress.kubernetes.io/load-balancer-name: 'be-phong-todoapp'
+  alb.ingress.kubernetes.io/healthcheck-path: /todos
+
+# Environment Variables
+dbhub:
+  enabled: true
+  dbname: secret-db-name
+  dbpass: secret-db-password
+  dbusername: secret-db-username
+  dbport: secret-db-port
+  dbhost: secret-db-host
+  optional: false
+
+# Resources
+resources:
+  limits:
+      cpu: 500m
+  requests:
+      cpu: 250m
+
+

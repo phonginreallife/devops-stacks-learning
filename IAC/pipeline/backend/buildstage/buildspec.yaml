@@ -1,0 +1,29 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - echo "Logging in to Amazon ECR..."
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      # Get the latest pushed image tag or set a default value
+      - export LATEST_TAG=$(aws ecr describe-images --repository-name $IMAGE_NAME --query 'imageDetails[].imageTags | []' --output json | jq -r 'select(. != null) | .[]' | grep -E '^[0-9]+\.[0-9]+$' | sort -V | tail -n 1 || echo "0.0")
+      # Extract the major and minor version components
+      - export MAJOR_MINOR_VERSION=$LATEST_TAG
+      - echo "Latest tag $LATEST_TAG"
+  build:
+    commands:
+      - echo "Build started on `date`"
+      - echo "Building the Docker image..."
+      - # Increment the minor version component
+      - export MAJOR_MINOR_VERSION=$(echo $MAJOR_MINOR_VERSION | awk -F. '{$2+=1; print}' OFS=.)
+      - echo "Major Minor Version $MAJOR_MINOR_VERSION"
+      - export IMAGE_TAG="$MAJOR_MINOR_VERSION"
+      - echo "Image Tag $IMAGE_TAG"
+      - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+      - docker tag $IMAGE_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG
+      - docker images
+  post_build:
+    commands:
+      - echo "Build completed on `date`"
+      - echo "Pushing the Docker image..."
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_NAME:$IMAGE_TAG
+      - echo "Push completed on `date`"

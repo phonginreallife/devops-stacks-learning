@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: eks-react-app
+  namespace: api-production
+  labels:
+    app: eks-todo-apps
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    # cert-manager.io/cluster-issuer: letsencrypt-route53
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-west-2:492804330065:certificate/64a16580-8524-411b-97b6-d51088d15d75
+    alb.ingress.kubernetes.io/load-balancer-name: 'be-phong-todoapp'
+    alb.ingress.kubernetes.io/healthcheck-path: /todos
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: eks-react-phong-trainee-service
+                port:
+                  number: 5000
+  tls:
+    - hosts:
+        - be-phong.devops-training.opswat.com
+      secretName: route53-cert-secrect 
