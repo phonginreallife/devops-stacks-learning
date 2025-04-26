@@ -8,7 +8,7 @@ const ListTodos = () => {
   //delete
   const deleteTodo = async (id) => {
     try {
-      const deleteTodo = await fetch(`https://be-phong.devops-training.opswat.com/todos/${id}`, {
+      const deleteTodo = await fetch(`${process.env.REACT_APP_API_URL}/todos/${id}`, {
         method: "DELETE"
       });
 
@@ -21,7 +21,7 @@ const ListTodos = () => {
   //get
   const getTodos = async () => {
     try {
-      const response = await fetch("https://be-phong.devops-training.opswat.com/todos");
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/todos`);
       const jsonData = await response.json();
 
       setTodos(jsonData);

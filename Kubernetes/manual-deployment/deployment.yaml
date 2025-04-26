@@ -1,22 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: eks-react-deployment
-  namespace: api-production
+  name: pern-todoapp-deployment
+  namespace: todoapp
   labels:
-    app: eks-todo-app
+    app: pern-todoapp
 spec:
   selector:
     matchLabels:
-      app: eks-todo-app
+      app: pern-todoapp
   template:
     metadata:
       labels:
-        app: eks-todo-app
+        app: pern-todoapp
     spec:
       containers:
-        - name: todo-react-app-phong-trainee
-          image: 492804330065.dkr.ecr.us-west-2.amazonaws.com/todoreactapp
+        - name: pern-todoapp
+          image: 123831926968.dkr.ecr.us-east-2.amazonaws.com/todoapp:v1.1.2
+          envFrom:
+            - secretRef:
+                name: todoapp-secrets 
           ports:
             - name: http
               containerPort: 5000
@@ -26,36 +29,5 @@ spec:
             requests:
               cpu: 200m
           imagePullPolicy: IfNotPresent
-          env:
-            - name: SECRET_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: secretsdb  
-                  key: secret-db-username
-                  optional: false
-            - name: SECRET_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: secretsdb  
-                  key: secret-db-password
-                  optional: false
-            - name: SECRET_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: secretsdb  
-                  key: secret-db-port
-                  optional: false
-            - name: SECRET_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: secretsdb  
-                  key: secret-db-name
-                  optional: false
-            - name: SECRET_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: secretsdb  
-                  key: secret-db-host
-                  optional: false
       nodeSelector:
         kubernetes.io/os: linux

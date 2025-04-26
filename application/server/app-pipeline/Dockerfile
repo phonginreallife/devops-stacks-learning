@@ -1,5 +1,5 @@
 # Base image
-FROM public.ecr.aws/docker/library/node:16.20.2
+FROM public.ecr.aws/docker/library/node:22.14
 
 # Set the working directory in the container
 WORKDIR /server
@@ -18,4 +18,4 @@ COPY . .
 EXPOSE 5000
 
 # Set the entrypoint command to run your application
-CMD ["npx", "nodemon", "server"]
+CMD ["node", "index.js"]

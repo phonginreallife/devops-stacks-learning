@@ -1,0 +1,6 @@
+pymongo
+datetime
+boto3
+pandas
+openpyxl
+requests

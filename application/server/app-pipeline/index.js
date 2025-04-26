@@ -2,12 +2,29 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const pool = require("./db");
+require('dotenv').config();
+
+
+const corsOrigin = process.env.CORS_ORIGIN || '*'; // Default to '*' if not set
 
 //middleware
-app.use(cors());
-app.use(express.json()); // req.body
+app.use(cors({
+    origin: `${corsOrigin}`,
+  }));
 
-//ROUTES//
+// 🔧 Parse JSON bodies
+app.use(express.json());
+
+// 🔍 Logging middleware
+app.use((req, res, next) => {
+    const timestamp = new Date().toISOString();
+    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;  
+    console.log(`[${timestamp}] ${req.method} ${req.originalUrl} - IP: ${ip}`);
+    if (req.method !== 'GET') {
+      console.log("Request Body:", req.body); // Log body for POST, PUT, DELETE, etc.
+    }
+    next(); 
+  });
 
 //create a todo
 app.post("/todos", async(req, res) => {
@@ -19,6 +36,7 @@ app.post("/todos", async(req, res) => {
         );
         res.json(newTodo.rows[0]);
     } catch (err) {
+        console.error("Error in POST /todos:", err.message);
         console.error(err.message);
     }
 })
@@ -29,7 +47,8 @@ app.get("/todos", async(req, res) => {
         const allTodos = await pool.query("SELECT * FROM todo");
         res.json(allTodos.rows);
     } catch (err) {
-        console.error(err.message);
+        console.error("Error in GET /todos:", err.message);
+        res.status(500).send("Server error");
     }
 })
 
@@ -63,7 +82,7 @@ app.put("/todos/:id", async(req, res) => {
     }
 })
 
-//update a todo
+//delete a todo
 app.delete("/todos/:id", async(req, res) => {
     try {
         const { id } = req.params;

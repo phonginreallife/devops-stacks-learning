@@ -5,7 +5,7 @@ variable "ssh_keypair" {
   type = string
 }
 variable "ami" {
-  default = "ami-0f0603a9445f57336"
+  default = "ami-0c66075248f21366a"
 }
 variable "vpc" {
   type = any

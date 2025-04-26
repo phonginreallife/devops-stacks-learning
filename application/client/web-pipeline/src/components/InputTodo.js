@@ -7,7 +7,7 @@ const InputTodo = () => {
         e.preventDefault(); //avoid refresh
         try {
             const body = { description };
-            const response = await fetch("https://be-phong.devops-training.opswat.com/todos", {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/todos`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)
