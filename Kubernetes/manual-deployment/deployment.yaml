@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: pern-todoapp
-          image: 123831926968.dkr.ecr.us-east-2.amazonaws.com/todoapp:v1.1.2
+          image: <your-images-repo-url>/<your-image-name>:<your-image-tag>
           envFrom:
             - secretRef:
                 name: todoapp-secrets 
