@@ -18,14 +18,22 @@ app.use(express.json());
 // 🔍 Logging middleware
 app.use((req, res, next) => {
     const timestamp = new Date().toISOString();
-    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;  
-    console.log(`[${timestamp}] ${req.method} ${req.originalUrl} - IP: ${ip}`);
-    if (req.method !== 'GET') {
-      console.log("Request Body:", req.body); // Log body for POST, PUT, DELETE, etc.
-    }
-    next(); 
-  });
 
+    const xForwardedFor = req.headers['x-forwarded-for'];
+    const rawIp = Array.isArray(xForwardedFor) ? xForwardedFor[0] :
+                  (typeof xForwardedFor === 'string' ? xForwardedFor.split(',')[0].trim() : req.socket.remoteAddress);
+    const ip = rawIp.startsWith("::ffff:") ? rawIp.slice(7) : rawIp;
+
+    // Skip internal IPs
+    if (!ip.startsWith('10.') && !ip.startsWith('192.168.') && !ip.startsWith('172.') && ip !== '127.0.0.1') {
+        console.log(`[${timestamp}] ${req.method} ${req.originalUrl} - IP: ${ip}`);
+        if (req.method !== 'GET') {
+            console.log("Request Body:", req.body);
+        }
+    }
+
+    next();
+});
 //create a todo
 app.post("/todos", async(req, res) => {
     try {
